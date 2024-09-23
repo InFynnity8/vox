@@ -85,12 +85,19 @@ export default function MicrophoneComponent() {
     // Initialize the MediaRecorder
     navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
       mediaRecorderRefs.current[slotIndex] = new MediaRecorder(stream);
-      mediaRecorderRefs.current[slotIndex].ondataavailable = (event) => {
-        audioChunksRefs.current[slotIndex].push(event.data);
-      };
-      mediaRecorderRefs.current[slotIndex].start();
+      if (mediaRecorderRefs.current[slotIndex]) {
+        mediaRecorderRefs.current[slotIndex].ondataavailable = (event) => {
+            audioChunksRefs.current[slotIndex].push(event.data);
+        };
+        mediaRecorderRefs.current[slotIndex].start();
+    } else {
+        console.error('Media recorder reference is null for slot index:', slotIndex);
+    }
+    
     });
   };
+
+  
 
   // Function to stop recording for a specific slot
   const stopRecording = (slotIndex: number) => {
