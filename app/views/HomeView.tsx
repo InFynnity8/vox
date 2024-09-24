@@ -89,10 +89,16 @@ export default function MicrophoneComponent() {
         mediaRecorderRefs.current[slotIndex]!.ondataavailable = (event) => {
           audioChunksRefs.current[slotIndex].push(event.data);
         };
-        mediaRecorderRefs.current[slotIndex].start();
+      
+        // Check again before calling start
+        if (mediaRecorderRefs.current[slotIndex]) {
+          mediaRecorderRefs.current[slotIndex]!.start();
+        } else {
+          console.error('Media recorder reference became null for slot index:', slotIndex);
+        }
       } else {
         console.error('Media recorder reference is null for slot index:', slotIndex);
-    }
+      }
     
     });
   };
