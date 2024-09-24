@@ -348,7 +348,7 @@ export default function MicrophoneComponent() {
                 </div>
               )}
             </div>
-            <p className="text-sm text-muted-foreground text-[#010e21] text-center">
+            <p className="text-sm text-muted-foreground  text-orange-600 text-center">
                   { `Recorded ${slot.audioUrls.length} file(s).`
                     }
                 </p>
