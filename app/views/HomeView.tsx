@@ -158,10 +158,9 @@ export default function MicrophoneComponent() {
   
     if (!audioRefs.current[slotIndex]) {
       audioRefs.current[slotIndex] = new Audio(audioUrl);
-    } else if (audioRefs.current[slotIndex].src !== audioUrl) {
+    } else if (audioRefs.current[slotIndex] && audioRefs.current[slotIndex].src !== audioUrl) {
       audioRefs.current[slotIndex].src = audioUrl;
     }
-  
     const audio = audioRefs.current[slotIndex];
   
     if (!audio) return; // Ensure audio instance exists
