@@ -107,14 +107,16 @@ export default function MicrophoneComponent() {
 
   // Function to stop recording for a specific slot
   const stopRecording = (slotIndex: number) => {
-    if (mediaRecorderRefs.current[slotIndex]) {
-      mediaRecorderRefs.current[slotIndex].stop();
-      mediaRecorderRefs.current[slotIndex].onstop = () => {
+    const mediaRecorder = mediaRecorderRefs.current[slotIndex];
+  
+    if (mediaRecorder) {
+      mediaRecorder.stop();
+      mediaRecorder.onstop = () => {
         const audioBlob = new Blob(audioChunksRefs.current[slotIndex], {
           type: "audio/webm",
         });
         const audioUrl = URL.createObjectURL(audioBlob);
-
+  
         setRecordingSlots((prev) =>
           prev.map((slot, index) =>
             index === slotIndex
@@ -128,10 +130,12 @@ export default function MicrophoneComponent() {
               : slot
           )
         );
-
+  
         // Clear the audio chunks for the next recording
         audioChunksRefs.current[slotIndex] = [];
       };
+    } else {
+      console.error('Media recorder reference is null when trying to stop for slot index:', slotIndex);
     }
   };
 
