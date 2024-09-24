@@ -86,11 +86,11 @@ export default function MicrophoneComponent() {
     navigator.mediaDevices.getUserMedia({ audio: true }).then((stream) => {
       mediaRecorderRefs.current[slotIndex] = new MediaRecorder(stream);
       if (mediaRecorderRefs.current[slotIndex]) {
-        mediaRecorderRefs.current[slotIndex].ondataavailable = (event) => {
-            audioChunksRefs.current[slotIndex].push(event.data);
+        mediaRecorderRefs.current[slotIndex]!.ondataavailable = (event) => {
+          audioChunksRefs.current[slotIndex].push(event.data);
         };
         mediaRecorderRefs.current[slotIndex].start();
-    } else {
+      } else {
         console.error('Media recorder reference is null for slot index:', slotIndex);
     }
     
