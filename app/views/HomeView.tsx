@@ -141,41 +141,49 @@ export default function MicrophoneComponent() {
 
   // Toggle recording state for a specific slot
   const handleToggleRecording = (slotIndex: number) => {
-    if (!recordingSlots[slotIndex].isRecording) {
+    if (recordingSlots[slotIndex]?.isRecording === false) {
       startRecording(slotIndex);
     } else {
       stopRecording(slotIndex);
     }
   };
-
+  
   // Custom play/pause functionality for a specific slot and audio
   const handlePlayPause = (slotIndex: number, audioIndex: number) => {
-    const audioUrl = recordingSlots[slotIndex].audioUrls[audioIndex];
-
+    const slot = recordingSlots[slotIndex];
+  
+    if (!slot || !slot.audioUrls[audioIndex]) return; // Ensure slot and audio URL exist
+  
+    const audioUrl = slot.audioUrls[audioIndex];
+  
     if (!audioRefs.current[slotIndex]) {
       audioRefs.current[slotIndex] = new Audio(audioUrl);
     } else if (audioRefs.current[slotIndex].src !== audioUrl) {
       audioRefs.current[slotIndex].src = audioUrl;
     }
-
+  
     const audio = audioRefs.current[slotIndex];
-
+  
+    if (!audio) return; // Ensure audio instance exists
+  
     // Set looping
-    audio.loop = recordingSlots[slotIndex].isLooping;
-
+    audio.loop = slot.isLooping || false;
+  
     if (audio.paused) {
-      audio.play();
-      updatePlayingStatus(slotIndex, audioIndex, "Playing");
-
+      audio.play().then(() => {
+        updatePlayingStatus(slotIndex, audioIndex, "Playing");
+      }).catch((error) => {
+        console.error("Error playing audio:", error);
+      });
+  
       // Set up event listeners for when audio finishes or pauses
       audio.onended = () => handleAudioEnd(slotIndex, audioIndex);
-      audio.onpause = () =>
-        updatePlayingStatus(slotIndex, audioIndex, "Paused");
+      audio.onpause = () => updatePlayingStatus(slotIndex, audioIndex, "Paused");
     } else {
       audio.pause();
     }
   };
-
+  
   // Update playing status for a specific slot and audio index
   const updatePlayingStatus = (
     slotIndex: number,
@@ -195,12 +203,12 @@ export default function MicrophoneComponent() {
       )
     );
   };
-
+  
   // Handle when audio ends for a specific slot
   const handleAudioEnd = (slotIndex: number, audioIndex: number) => {
     updatePlayingStatus(slotIndex, audioIndex, "Stopped");
   };
-
+  
   // Handle looping for a specific slot
   const toggleLoop = (slotIndex: number) => {
     setRecordingSlots((prev) =>
@@ -209,7 +217,7 @@ export default function MicrophoneComponent() {
       )
     );
   };
-
+  
   // Clear all recordings
   const clearAllRecordings = () => {
     setRecordingSlots([
@@ -243,6 +251,7 @@ export default function MicrophoneComponent() {
       },
     ]);
   };
+  
 
   // Cleanup effect when the component unmounts
   useEffect(() => {
